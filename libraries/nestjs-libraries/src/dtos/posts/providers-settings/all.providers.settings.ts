@@ -90,6 +90,7 @@ export const allProviders = (setEmpty?: any) => {
     { value: setEmpty, name: 'threads' },
     { value: setEmpty, name: 'mastodon' },
     { value: setEmpty, name: 'bluesky' },
+    { value: setEmpty, name: 'pixelfed' },
     { value: setEmpty, name: 'telegram' },
     { value: setEmpty, name: 'nostr' },
     { value: setEmpty, name: 'vk' },
