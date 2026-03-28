@@ -108,21 +108,6 @@ PIXELFED_CLIENT_SECRET=your_client_secret
 
 ---
 
-## 🔄 Updating from Upstream
-
-This fork regularly syncs with the [official Postiz repository](https://github.com/gitroomhq/postiz-app):
-
-```bash
-# Check for upstream updates
-curl -H "Authorization: token $GITHUB_TOKEN" \
-  "https://api.github.com/repos/gitroomhq/postiz-app/releases/latest"
-
-# Automated weekly updates via GitHub Actions
-# See: .github/workflows/sync-upstream.yml
-```
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please note:
