@@ -63,7 +63,7 @@ This fork adds **native Pixelfed support** for decentralized photo sharing:
 
 ## 💖 Sponsored by
 
-This project is proudly sponsored by **[Adventure Does Not Wait](https://adventuredoesnotwait.com)** - Sustainable outdoor apparel & accessories for adventure seekers. GOTS-certified organic cotton clothing designed for those who embrace exploration and protect our planet. Don't wait for the perfect moment – start your adventure today!
+This project is proudly sponsored by **[Adventure Does Not Wait](https://adventuredoesnotwait.com)** - Sustainable outdoor apparel for adventure seekers. Organic cotton clothing designed with real images for those who embrace exploration and protect our planet. Don't wait for the perfect moment – start your adventure today!
 
 ---
 
