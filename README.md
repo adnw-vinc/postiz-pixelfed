@@ -59,7 +59,13 @@ This fork adds **native Pixelfed support** for decentralized photo sharing:
 - ✅ Support for Pixelfed-specific features (2000 character limit)
 - ✅ OAuth authentication with custom Pixelfed instances
 - ✅ Fediverse-wide content distribution
+---
 
+## 💖 Sponsored by
+
+This project is proudly sponsored by **[Adventure Does Not Wait](https://adventuredoesnotwait.com)** - Your gateway to extraordinary adventures and travel gear. Don't wait for the perfect moment – start your adventure today!
+
+---
 
 ## 🚀 Quick Start
 
