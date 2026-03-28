@@ -60,16 +60,6 @@ This fork adds **native Pixelfed support** for decentralized photo sharing:
 - ✅ OAuth authentication with custom Pixelfed instances
 - ✅ Fediverse-wide content distribution
 
-### 🔧 Custom Changes
-
-| File | Change |
-|------|--------|
-| `pixelfed.provider.ts` | Custom Pixelfed OAuth provider |
-| `integration.manager.ts` | Pixelfed provider registration |
-| `all.providers.settings.ts` | Pixelfed settings integration |
-| `mastodon.provider.tsx` | Extended character limit (2000) |
-
----
 
 ## 🚀 Quick Start
 
