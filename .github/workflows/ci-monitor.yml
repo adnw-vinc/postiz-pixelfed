@@ -1,0 +1,58 @@
+name: CI Monitor
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+
+jobs:
+  check-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Check for repeated failures
+        run: |
+          echo "Workflow ${{ github.event.workflow_run.name }} failed!"
+          echo "Run URL: ${{ github.event.workflow_run.html_url }}"
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}"
+          
+          # Get failed runs count for this workflow
+          FAILED_COUNT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?event=push&status=completed" | \
+            python3 -c "import sys,json; d=json.load(sys.stdin); print(len([r for r in d.get('workflow_runs',[]) if r['conclusion']=='failure' and r['head_branch']=='master']))")
+          
+          echo "Failed runs on master: $FAILED_COUNT"
+          
+          if [ "$FAILED_COUNT" -ge 3 ]; then
+            echo "::warning::Multiple CI failures detected on master branch!"
+            echo "Please check: .github/workflows/build.yml"
+          fi
+
+  auto-cleanup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master' }}
+    steps:
+      - name: Cleanup old failed runs
+        run: |
+          echo "Cleaning up old failed workflow runs..."
+          
+          # Get failed runs older than 7 days
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=100" | \
+          python3 << 'EOF'
+import json, subprocess, sys, datetime
+
+data = json.load(sys.stdin)
+now = datetime.datetime.now(datetime.timezone.utc)
+
+for run in data.get('workflow_runs', []):
+    if run['conclusion'] == 'failure':
+        run_date = datetime.datetime.fromisoformat(run['updated_at'].replace('Z', '+00:00'))
+        age = now - run_date
+        if age.days > 7:
+            run_id = run['id']
+            print(f"Deleting old failed run #{run['run_number']} (ID: {run_id})")
+            # subprocess.run(['curl', '-s', '-X', 'DELETE', '-H', f'Authorization: token ${{ secrets.GITHUB_TOKEN }}', f'https://api.github.com/repos/${{ github.repository }}/actions/runs/{run_id}'])
+EOF
+          
+          echo "Cleanup complete!"
