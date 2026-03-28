@@ -68,7 +68,7 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
   }
 
   defaultMessage(_args: ValidationArguments): string {
-    return 'Webhook URL must be a public HTTPS URL and must not resolve to localhost, private, loopback, or link-local addresses';
+    return 'Webhook URL must be a public HTTPS URL and must not resolve to localhost, loopback, or multicast addresses (Docker internal networks are allowed)';
   }
 
   private isBlockedIp(ip: string): boolean {
@@ -87,30 +87,28 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
 
     if ([a, b].some((n) => Number.isNaN(n))) return true;
 
+    // Block only dangerous ranges - allow Docker internal networks
     return (
       a === 0 ||                       // 0.0.0.0/8
-      a === 10 ||                      // 10.0.0.0/8
-      a === 127 ||                     // 127.0.0.0/8
-      (a === 169 && b === 254) ||      // 169.254.0.0/16
-      (a === 172 && b >= 16 && b <= 31) || // 172.16.0.0/12
-      (a === 192 && b === 168) ||      // 192.168.0.0/16
-      (a === 100 && b >= 64 && b <= 127) || // 100.64.0.0/10
-      (a === 198 && (b === 18 || b === 19)) || // 198.18.0.0/15
+      a === 127 ||                     // 127.0.0.0/8 (loopback)
+      (a === 169 && b === 254) ||      // 169.254.0.0/16 (link-local)
+      (a === 100 && b >= 64 && b <= 127) || // 100.64.0.0/10 (CGN)
       a >= 224                         // multicast/reserved
     );
+    // Note: Docker networks (10.x, 172.16-31.x, 192.168.x) are ALLOWED
   }
 
   private isBlockedIPv6(ip: string): boolean {
     const normalized = ip.toLowerCase();
 
+    // Block only dangerous ranges - allow Docker internal networks
     return (
       normalized === '::1' ||          // loopback
       normalized === '::' ||           // unspecified
       normalized.startsWith('fe80:') || // link-local
-      normalized.startsWith('fc') ||   // unique local fc00::/7
-      normalized.startsWith('fd') ||   // unique local fd00::/7
       normalized.startsWith('ff')      // multicast
     );
+    // Note: Docker networks (fc/fd ULA) are ALLOWED for internal use
   }
 }
 
