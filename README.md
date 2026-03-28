@@ -38,6 +38,11 @@
   <img alt="Discord" src="https://postiz.com/svgs/socials/Discord.svg" width="32">
   <img alt="Mastodon" src="https://postiz.com/svgs/socials/Mastodon.svg" width="32">
   <img alt="Bluesky" src="https://postiz.com/svgs/socials/Bluesky.svg" width="32">
+  <img alt="Bluesky" src="https://postiz.com/svgs/socials/Bluesky.svg" width="32">
+  <img alt="Pixelfed" src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Pixelfed-logo.png" width="32">
+</div>
+
+> **🎨 Pixelfed Integration**: This custom fork adds native [Pixelfed](https://pixelfed.social) support for decentralized photo sharing. Schedule and manage posts across the Fediverse!
 </div>
 
 <p align="center">
