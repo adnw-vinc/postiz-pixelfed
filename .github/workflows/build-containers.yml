@@ -1,17 +1,16 @@
 ---
 name: "Build Containers"
 
-nenv:
+env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+permissions:
+  contents: read
+  packages: write
 on:
   workflow_dispatch:
   push:
     tags:
       - '*'
-
-permissions:
-  contents: read
-  packages: write
 
 jobs:
   build-containers-common:
