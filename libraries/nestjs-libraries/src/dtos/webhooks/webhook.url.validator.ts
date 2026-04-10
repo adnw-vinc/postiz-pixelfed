@@ -55,6 +55,7 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
         return false;
       }
 
+
       for (const record of records) {
         if (this.isBlockedIp(record.address)) {
           return false;
@@ -85,6 +86,7 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
   private isBlockedIPv4(ip: string): boolean {
     const [a, b] = ip.split('.').map(Number);
 
+
     if ([a, b].some((n) => Number.isNaN(n))) return true;
 
     // Block only dangerous ranges - allow Docker internal networks
@@ -113,14 +115,6 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
   }
 }
 
-export function IsSafeWebhookUrl(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
-    registerDecorator({
-      target: object.constructor,
-      propertyName,
-      options: validationOptions,
-      validator: IsSafeWebhookUrlConstraint,
-    });
 export function IsSafeWebhookUrl(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
@@ -163,5 +157,11 @@ export async function isSafePublicHttpsUrl(url: string): Promise<boolean> {
   }
 
   const constraint = new IsSafeWebhookUrlConstraint();
-  return constraint.validate(url, {});
+  return constraint.validate(url, {
+    value: url,
+    constraints: [],
+    targetName: '',
+    object: {},
+    property: '',
+  });
 }
