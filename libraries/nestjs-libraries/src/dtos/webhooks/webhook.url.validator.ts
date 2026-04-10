@@ -121,5 +121,47 @@ export function IsSafeWebhookUrl(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: IsSafeWebhookUrlConstraint,
     });
+export function IsSafeWebhookUrl(validationOptions?: ValidationOptions) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: IsSafeWebhookUrlConstraint,
+    });
   };
+}
+
+/**
+ * Standalone function to check if a URL is a safe public HTTPS URL.
+ * Used by public.controller.ts for URL validation before fetching.
+ */
+export async function isSafePublicHttpsUrl(url: string): Promise<boolean> {
+  if (typeof url !== 'string' || !url.trim()) {
+    return false;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+
+  if (parsed.protocol !== 'https:') {
+    return false;
+  }
+
+  if (!parsed.hostname) {
+    return false;
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  if (hostname === 'localhost') {
+    return false;
+  }
+
+  const constraint = new IsSafeWebhookUrlConstraint();
+  return constraint.validate(url, {});
 }
