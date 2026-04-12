@@ -121,3 +121,4 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 **Built with ❤️ for the Fediverse community**
 
 <!-- Updated: 2026-04-12 -->
+<!-- Restored Pixelfed customizations: 2026-04-12 18:29:33 -->
