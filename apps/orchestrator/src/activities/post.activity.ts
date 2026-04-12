@@ -305,6 +305,7 @@ export class PostActivity {
   }) {
     return this._integrationService.processInternalPlug(data);
   }
+
   @ActivityMethod()
   async refreshToken(
     integration: Integration
@@ -330,6 +331,7 @@ export class PostActivity {
       await this._refreshIntegrationService.setBetweenSteps(integration);
       return false;
     }
+  }
 
   @ActivityMethod()
   async refreshTokenWithCause(
