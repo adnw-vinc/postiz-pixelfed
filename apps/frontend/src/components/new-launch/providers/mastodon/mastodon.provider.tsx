@@ -11,5 +11,5 @@ export default withProvider({
   CustomPreviewComponent: undefined,
   dto: undefined,
   checkValidity: undefined,
-  maximumCharacters: 2000,
+  maximumCharacters: 500,
 });
