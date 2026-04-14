@@ -95,6 +95,7 @@ export const allProviders = (setEmpty?: any) => {
     { value: setEmpty, name: 'telegram' },
     { value: setEmpty, name: 'nostr' },
     { value: setEmpty, name: 'vk' },
+    { value: setEmpty, name: 'pixelfed' },
     { value: MoltbookDto, name: 'moltbook' },
     { value: SkoolDto, name: 'skool' },
     { value: WhopDto, name: 'whop' },
