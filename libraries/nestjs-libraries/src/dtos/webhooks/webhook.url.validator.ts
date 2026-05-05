@@ -115,6 +115,37 @@ export class IsSafeWebhookUrlConstraint implements ValidatorConstraintInterface 
   }
 }
 
+/**
+ * Standalone blocked IP check - exported for use by ssrf.safe.dispatcher.ts
+ * Blocked ranges: 0.x, 127.x, 169.254.x, 100.64-127.x, 198.18-19.x, 224+
+ * ALLOWED: Docker networks (10.x, 172.16-31.x, 192.168.x)
+ */
+export function isBlockedIp(ip: string): boolean {
+  const version = net.isIP(ip);
+  if (version === 4) {
+    const [a, b] = ip.split('.').map(Number);
+    if ([a, b].some((n) => Number.isNaN(n))) return true;
+    return (
+      a === 0 ||
+      a === 127 ||
+      (a === 169 && b === 254) ||
+      (a === 100 && b >= 64 && b <= 127) ||
+      (a === 198 && (b === 18 || b === 19)) ||
+      a >= 224
+    );
+  }
+  if (version === 6) {
+    const normalized = ip.toLowerCase();
+    return (
+      normalized === '::1' ||
+      normalized === '::' ||
+      normalized.startsWith('fe80:') ||
+      normalized.startsWith('ff')
+    );
+  }
+  return true;
+}
+
 export function IsSafeWebhookUrl(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
