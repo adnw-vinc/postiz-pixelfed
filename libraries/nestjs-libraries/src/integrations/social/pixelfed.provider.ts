@@ -17,7 +17,7 @@ export class PixelfedProvider extends SocialAbstract implements SocialProvider {
   scopes = ['write:statuses', 'profile', 'write:media'];
   editor = 'normal' as const;
   maxLength() {
-    return 500;
+    return 2000;
   }
 
   async refreshToken(refreshToken: string): Promise<AuthTokenDetails> {
