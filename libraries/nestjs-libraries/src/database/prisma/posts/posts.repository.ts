@@ -1,7 +1,12 @@
 import { PrismaRepository } from '@gitroom/nestjs-libraries/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Post as PostBody } from '@gitroom/nestjs-libraries/dtos/posts/create.post.dto';
-import { APPROVED_SUBMIT_FOR_ORDER, Post, State } from '@prisma/client';
+import {
+  APPROVED_SUBMIT_FOR_ORDER,
+  CreationMethod,
+  Post,
+  State,
+} from '@prisma/client';
 import { GetPostsDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.dto';
 import { GetPostsListDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.list.dto';
 import dayjs from 'dayjs';
@@ -35,10 +40,11 @@ export class PostsRepository {
           refreshNeeded: false,
           inBetweenSteps: false,
           disabled: false,
+          deletedAt: null,
         },
         publishDate: {
-          gte: dayjs.utc().subtract(2, 'hour').toDate(),
-          lt: dayjs.utc().add(2, 'hour').toDate(),
+          gte: dayjs.utc().subtract(2, 'day').toDate(),
+          lt: dayjs.utc().toDate(),
         },
         state: 'QUEUE',
         deletedAt: null,
@@ -173,6 +179,7 @@ export class PostsRepository {
         state: true,
         intervalInDays: true,
         group: true,
+        creationMethod: true,
         tags: {
           select: {
             tag: true,
@@ -217,6 +224,26 @@ export class PostsRepository {
     const limit = query.limit || 20;
     const skip = page * limit;
 
+    const stateFilter = query.state || 'all';
+    const stateAndDate =
+      stateFilter === 'scheduled'
+        ? {
+            state: State.QUEUE,
+            publishDate: { gte: dayjs.utc().toDate() },
+          }
+        : stateFilter === 'draft'
+        ? { state: State.DRAFT }
+        : stateFilter === 'published'
+        ? { state: State.PUBLISHED }
+        : {
+            state: {
+              in: [State.QUEUE, State.DRAFT, State.PUBLISHED, State.ERROR],
+            },
+          };
+
+    const orderDirection: 'asc' | 'desc' =
+      stateFilter === 'published' ? 'desc' : 'asc';
+
     const where = {
       AND: [
         {
@@ -226,12 +253,8 @@ export class PostsRepository {
             },
           ],
         },
-        {
-          publishDate: {
-            gte: dayjs.utc().toDate(),
-          },
-        },
       ],
+      ...stateAndDate,
       deletedAt: null as Date | null,
       parentPostId: null as string | null,
       intervalInDays: null as number | null,
@@ -250,7 +273,7 @@ export class PostsRepository {
         skip,
         take: limit,
         orderBy: {
-          publishDate: 'asc',
+          publishDate: orderDirection,
         },
         select: {
           id: true,
@@ -260,6 +283,7 @@ export class PostsRepository {
           releaseId: true,
           state: true,
           group: true,
+          creationMethod: true,
           tags: {
             select: {
               tag: true,
@@ -483,6 +507,7 @@ export class PostsRepository {
     date: string,
     body: PostBody,
     tags: { value: string; label: string }[],
+    creationMethod: CreationMethod,
     inter?: number
   ) {
     const posts: Post[] = [];
@@ -517,6 +542,7 @@ export class PostsRepository {
         group: uuid,
         intervalInDays: inter ? +inter : null,
         approvedSubmitForOrder: APPROVED_SUBMIT_FOR_ORDER.NO,
+        ...(type === 'create' ? { creationMethod } : {}),
         ...(state === 'update'
           ? {}
           : {
